@@ -257,7 +257,7 @@ def findDijkstraPath(startNode, goalNode, map):
                         backTracking(goalNode,startNode,closed_list,map)
                         return True
 
-                # RIGHT      
+                # Right      
                 flag, child_node = actionMoveRight(present_node,map)    
                 child_node = tuple(child_node)
 
@@ -464,7 +464,7 @@ def backTracking(goalNode, startNode, closed_list, map):
     cv2.waitKey(0)
 
 
-# Calling the map generating function 
+# Calling the map generating functions 
 if __name__ == '__main__':
 
     map = generateMap(height_map, width_map)
