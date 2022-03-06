@@ -3,7 +3,7 @@ Author : Sai Sandeep Adapa (sadapa@umd.edu)
 
 Brief : Implementation of Dijkstra algorithm for a Point Robot
 
-""""
+"""
 # Importing required Libraries
 import sys
 import cv2
@@ -12,13 +12,13 @@ import heapq as hq
 import time
 import imutils
 
-
+# Creating the background canvas and assigning obstacle colour
 height_map = 250    
 width_map = 400
-clr_robot = 5    
-obstacle_color = [0,0,255]    
+clr_robot = 5    # Clearance 5mm
+obstacle_color = [0,0,255]  # Red colour  
 
-
+# Generating Map and obstacles using half planes method
 def generateMap(height, width):
 
     map = np.empty((height, width, 3), dtype='uint8')
@@ -39,8 +39,16 @@ def generateMap(height, width):
                 map[y][x] = obstacle_color  
     
     return map
- 
 
+# Function  to check the if the input coordinates are in the obstacle region
+def isObstacle(map, i, j):
+ 
+    if (map[i][j][2] < obstacle_color[2]):
+        return False
+    else:
+        return True
+ 
+# Checking for applicable inputs 
 def checkInputFeasibility(x_start, y_start, x_goal, y_goal, map):
  
     input_flag = True
@@ -55,14 +63,6 @@ def checkInputFeasibility(x_start, y_start, x_goal, y_goal, map):
     return input_flag
 
 
-def isObstacle(map, i, j):
- 
-    if (map[i][j][2] < obstacle_color[2]):# and map[i][j][1] is not obstacle_color[1]):
-        return False
-    else:
-        return True
-
-
 def isGoalNode(CurrentNode, goalNode):
 
     if list(CurrentNode) == goalNode:
@@ -70,7 +70,7 @@ def isGoalNode(CurrentNode, goalNode):
     else:
         return False
 
-
+# Conditions to Move Top
 def actionMoveTop(CurrentNode,map):
 
     NextNode = CurrentNode.copy()
@@ -82,7 +82,7 @@ def actionMoveTop(CurrentNode,map):
 
     return (Status, NextNode)
 
-
+# Conditions to Move Top Right (Diagonally)
 def actionMoveTopRight(CurrentNode,map):
 
     NextNode = CurrentNode.copy()
@@ -96,7 +96,7 @@ def actionMoveTopRight(CurrentNode,map):
 
     return (Status, NextNode)
 
-
+# Conditions to Move Right (Diagonally)
 def actionMoveRight(CurrentNode,map):
     
     NextNode = CurrentNode.copy()
@@ -108,7 +108,7 @@ def actionMoveRight(CurrentNode,map):
 
     return (Status, NextNode)
 
-
+# Conditions to Move Bottom Right
 def actionMoveBottomRight(CurrentNode,map):
     
     NextNode = CurrentNode.copy()
@@ -121,7 +121,7 @@ def actionMoveBottomRight(CurrentNode,map):
 
     return (Status, NextNode)
 
-
+# Conditions to Move Bottom
 def actionMoveBottom(CurrentNode,map):
     
     NextNode = CurrentNode.copy()
@@ -133,7 +133,7 @@ def actionMoveBottom(CurrentNode,map):
 
     return (Status, NextNode)
 
-
+# Conditions to Move Bottom Left(Diagonally)
 def actionMoveBottomLeft(CurrentNode,map):
     
     NextNode = CurrentNode.copy()
@@ -146,7 +146,7 @@ def actionMoveBottomLeft(CurrentNode,map):
 
     return (Status, NextNode)
 
-
+# Conditions to Move Left
 def actionMoveLeft(CurrentNode,map):
     
     NextNode = CurrentNode.copy()
@@ -158,7 +158,7 @@ def actionMoveLeft(CurrentNode,map):
 
     return (Status, NextNode)
 
-
+# Conditions to Move Top Left (Diagonally)
 def actionMoveTopLeft(CurrentNode,map):
     
     NextNode = CurrentNode.copy()
@@ -171,7 +171,7 @@ def actionMoveTopLeft(CurrentNode,map):
 
     return (Status, NextNode)
 
-
+# Dijkstras Algorithm 
 def findDijkstraPath(startNode, goalNode, map):
     
     closed_list = {}    
@@ -200,7 +200,7 @@ def findDijkstraPath(startNode, goalNode, map):
 
             else:
 
-                # TOP 
+                # Top 
                 flag, child_node = actionMoveTop(present_node,map)    
                 child_node = tuple(child_node)
 
@@ -229,7 +229,7 @@ def findDijkstraPath(startNode, goalNode, map):
                         return True
 
                 
-                # TOP RIGHT
+                # Top Right
                 flag, child_node = actionMoveTopRight(present_node,map)    
                 child_node = tuple(child_node)
 
@@ -286,7 +286,7 @@ def findDijkstraPath(startNode, goalNode, map):
                         return True
 
                 
-                # BOTTOM RIGHT
+                # Bottom Right
                 flag, child_node = actionMoveBottomRight(present_node,map) 
                 child_node = tuple(child_node)
 
@@ -315,7 +315,7 @@ def findDijkstraPath(startNode, goalNode, map):
                         return True
                 
 
-                # BOTTOM
+                # Bottom
                 flag,child_node = actionMoveBottom(present_node,map)   
                 child_node = tuple(child_node)
 
@@ -343,7 +343,7 @@ def findDijkstraPath(startNode, goalNode, map):
                         return True
                 
 
-                # BOTTOM LEFT
+                # Bottom Left
                 flag, child_node = actionMoveBottomLeft(present_node,map)  
                 child_node = tuple(child_node)
 
@@ -371,7 +371,7 @@ def findDijkstraPath(startNode, goalNode, map):
                         return True
                 
 
-                # LEFT
+                # Left
                 flag,child_node = actionMoveLeft(present_node,map)  
                 child_node = tuple(child_node)
 
@@ -398,7 +398,7 @@ def findDijkstraPath(startNode, goalNode, map):
                         return True                
 
 
-                # TOP LEFT
+                # Top Left
                 flag,child_node = actionMoveTopLeft(present_node,map)   
                 child_node = tuple(child_node)
 
@@ -430,10 +430,10 @@ def findDijkstraPath(startNode, goalNode, map):
             print("\n No path found between the start and goal explored_nodes") 
             return False
 
-
+# Implementing Backtracking to trace the shortest path 
 def backTracking(goalNode, startNode, closed_list, map):
     video_writer = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('proj02_case2.avi',video_writer,1000,(width_map,height_map))
+    out = cv2.VideoWriter('proj02_case2.avi',video_writer,1000,(width_map,height_map)) # Saving the recorded video
 
     final_parent = closed_list.get(tuple(goalNode))   
     cv2.line(map, tuple(goalNode), tuple(final_parent), (255,0,0), 1)
@@ -464,6 +464,7 @@ def backTracking(goalNode, startNode, closed_list, map):
     cv2.waitKey(0)
 
 
+# Calling the map generating function 
 if __name__ == '__main__':
 
     map = generateMap(height_map, width_map)
