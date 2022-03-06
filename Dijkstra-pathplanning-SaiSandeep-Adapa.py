@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 import heapq as hq
 import time
-import imutils
+
 
 # Creating the background canvas and assigning obstacle colour
 height_map = 250    
